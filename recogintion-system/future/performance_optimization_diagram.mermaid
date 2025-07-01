@@ -1,0 +1,118 @@
+graph TB
+    %% Входные данные
+    subgraph Input ["📥 Входные данные"]
+        AudioFiles[Аудиофайлы<br/>различных форматов]
+        VoiceFiles[Голосовые образцы<br/>для регистрации]
+    end
+    
+    %% Предварительная обработка
+    subgraph Preprocessing ["⚡ Предварительная обработка"]
+        FormatCheck[Проверка формата<br/>и качества]
+        BatchConversion[Пакетная конвертация<br/>в WAV]
+        AudioNormalization[Нормализация<br/>громкости]
+        QualityFilter[Фильтрация<br/>по качеству]
+    end
+    
+    %% Оптимизация моделей
+    subgraph ModelOptimization ["🚀 Оптимизация моделей"]
+        ModelCaching[Кэширование<br/>загруженных моделей]
+        BatchInference[Пакетная обработка<br/>инференса]
+        GPUOptimization[Оптимизация<br/>использования GPU]
+        ModelQuantization[Квантизация<br/>моделей]
+    end
+    
+    %% Параллельная обработка
+    subgraph ParallelProcessing ["🔄 Параллельная обработка"]
+        MultiThreading[Многопоточность<br/>для I/O операций]
+        AsyncProcessing[Асинхронная обработка<br/>независимых задач]
+        PipelineParallelism[Конвейерная обработка<br/>этапов пайплайна]
+        DataParallelism[Параллелизм по данным<br/>для больших файлов]
+    end
+    
+    %% Кэширование и оптимизация памяти
+    subgraph MemoryOptimization ["💾 Оптимизация памяти"]
+        EmbeddingCache[Кэш эмбеддингов<br/>говорящих]
+        ResultCache[Кэш результатов<br/>обработки]
+        MemoryPool[Пул памяти<br/>для аудиоданных]
+        GarbageCollection[Управление<br/>сборкой мусора]
+    end
+    
+    %% Оптимизация алгоритмов
+    subgraph AlgorithmOptimization ["🧠 Оптимизация алгоритмов"]
+        SmartSegmentation[Умная сегментация<br/>аудио]
+        AdaptiveThreshold[Адаптивные пороги<br/>для идентификации]
+        EarlyTermination[Ранняя остановка<br/>при уверенности]
+        HierarchicalClustering[Иерархическая<br/>кластеризация]
+    end
+    
+    %% Мониторинг производительности
+    subgraph PerformanceMonitoring ["📊 Мониторинг производительности"]
+        ResourceMonitor[Мониторинг<br/>ресурсов системы]
+        BottleneckDetection[Обнаружение<br/>узких мест]
+        PerformanceMetrics[Метрики<br/>производительности]
+        AutoTuning[Автоматическая<br/>настройка параметров]
+    end
+    
+    %% Результаты
+    subgraph Output ["📤 Результаты"]
+        OptimizedResults[Оптимизированные<br/>результаты]
+        PerformanceReport[Отчет о<br/>производительности]
+    end
+    
+    %% Связи
+    AudioFiles --> FormatCheck
+    VoiceFiles --> FormatCheck
+    FormatCheck --> BatchConversion
+    BatchConversion --> AudioNormalization
+    AudioNormalization --> QualityFilter
+    
+    QualityFilter --> ModelCaching
+    ModelCaching --> BatchInference
+    BatchInference --> GPUOptimization
+    GPUOptimization --> ModelQuantization
+    
+    ModelQuantization --> MultiThreading
+    MultiThreading --> AsyncProcessing
+    AsyncProcessing --> PipelineParallelism
+    PipelineParallelism --> DataParallelism
+    
+    DataParallelism --> EmbeddingCache
+    EmbeddingCache --> ResultCache
+    ResultCache --> MemoryPool
+    MemoryPool --> GarbageCollection
+    
+    GarbageCollection --> SmartSegmentation
+    SmartSegmentation --> AdaptiveThreshold
+    AdaptiveThreshold --> EarlyTermination
+    EarlyTermination --> HierarchicalClustering
+    
+    HierarchicalClustering --> ResourceMonitor
+    ResourceMonitor --> BottleneckDetection
+    BottleneckDetection --> PerformanceMetrics
+    AutoTuning --> OptimizedResults
+    OptimizedResults --> PerformanceReport
+    
+    %% Обратные связи для оптимизации
+    BottleneckDetection -.-> ModelOptimization
+    PerformanceMetrics -.-> ParallelProcessing
+    AutoTuning -.-> MemoryOptimization
+    ResourceMonitor -.-> AlgorithmOptimization
+    
+    %% Стили
+    classDef inputStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef preprocessStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef modelStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef parallelStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef memoryStyle fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef algorithmStyle fill:#f1f8e9,stroke:#689f38,stroke-width:2px
+    classDef monitorStyle fill:#efebe9,stroke:#5d4037,stroke-width:2px
+    classDef outputStyle fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    
+    class AudioFiles,VoiceFiles inputStyle
+    class FormatCheck,BatchConversion,AudioNormalization,QualityFilter preprocessStyle
+    class ModelCaching,BatchInference,GPUOptimization,ModelQuantization modelStyle
+    class MultiThreading,AsyncProcessing,PipelineParallelism,DataParallelism parallelStyle
+    class EmbeddingCache,ResultCache,MemoryPool,GarbageCollection memoryStyle
+    class SmartSegmentation,AdaptiveThreshold,EarlyTermination,HierarchicalClustering algorithmStyle
+    class ResourceMonitor,BottleneckDetection,PerformanceMetrics,AutoTuning monitorStyle
+    class OptimizedResults,PerformanceReport outputStyle
