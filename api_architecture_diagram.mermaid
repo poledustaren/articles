@@ -38,11 +38,11 @@ graph TB
     %% Model Service API
     subgraph ModelServiceAPI ["🤖 Model Service API"]
         ListModels[GET /api/models<br/>Список моделей]
-        GetModelInfo[GET /api/models/{name}<br/>Информация о модели]
-        LoadModel[POST /api/models/{name}/load<br/>Загрузка модели]
-        UnloadModel[POST /api/models/{name}/unload<br/>Выгрузка модели]
-        ModelHealth[GET /api/models/{name}/health<br/>Состояние модели]
-        ModelMetrics[GET /api/models/{name}/metrics<br/>Метрики модели]
+        GetModelInfo[GET /api/models/name<br/>Информация о модели]
+        LoadModel[POST /api/models/name/load<br/>Загрузка модели]
+        UnloadModel[POST /api/models/name/unload<br/>Выгрузка модели]
+        ModelHealth[GET /api/models/name/health<br/>Состояние модели]
+        ModelMetrics[GET /api/models/name/metrics<br/>Метрики модели]
     end
     
     %% File Service API
