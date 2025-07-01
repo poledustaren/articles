@@ -19,20 +19,20 @@ graph TB
     subgraph SpeakerServiceAPI ["👤 Speaker Service API"]
         EnrollSpeaker[POST /api/speakers/enroll<br/>Регистрация говорящего]
         ListSpeakers[GET /api/speakers<br/>Список говорящих]
-        GetSpeaker[GET /api/speakers/{id}<br/>Информация о говорящем]
-        UpdateSpeaker[PUT /api/speakers/{id}<br/>Обновление говорящего]
-        DeleteSpeaker[DELETE /api/speakers/{id}<br/>Удаление говорящего]
+        GetSpeaker[GET /api/speakers/id<br/>Информация о говорящем]
+        UpdateSpeaker[PUT /api/speakers/id<br/>Обновление говорящего]
+        DeleteSpeaker[DELETE /api/speakers/id<br/>Удаление говорящего]
         IdentifySpeaker[POST /api/speakers/identify<br/>Идентификация говорящего]
     end
     
     %% Transcription Service API
     subgraph TranscriptionServiceAPI ["📝 Transcription Service API"]
         ProcessAudio[POST /api/transcription/process<br/>Обработка аудио]
-        GetTranscription[GET /api/transcription/{id}<br/>Получение транскрипции]
+        GetTranscription[GET /api/transcription/id<br/>Получение транскрипции]
         ListTranscriptions[GET /api/transcriptions<br/>Список транскрипций]
         ProcessBatch[POST /api/transcription/batch<br/>Пакетная обработка]
-        GetStatus[GET /api/transcription/{id}/status<br/>Статус обработки]
-        GetEmotions[GET /api/transcription/{id}/emotions<br/>Анализ эмоций]
+        GetStatus[GET /api/transcription/id/status<br/>Статус обработки]
+        GetEmotions[GET /api/transcription/id/emotions<br/>Анализ эмоций]
     end
     
     %% Model Service API
@@ -48,11 +48,11 @@ graph TB
     %% File Service API
     subgraph FileServiceAPI ["📁 File Service API"]
         UploadFile[POST /api/files/upload<br/>Загрузка файла]
-        DownloadFile[GET /api/files/{id}/download<br/>Скачивание файла]
+        DownloadFile[GET /api/files/id/download<br/>Скачивание файла]
         ListFiles[GET /api/files<br/>Список файлов]
-        DeleteFile[DELETE /api/files/{id}<br/>Удаление файла]
-        GetFileInfo[GET /api/files/{id}<br/>Информация о файле]
-        ConvertFile[POST /api/files/{id}/convert<br/>Конвертация файла]
+        DeleteFile[DELETE /api/files/id<br/>Удаление файла]
+        GetFileInfo[GET /api/files/id<br/>Информация о файле]
+        ConvertFile[POST /api/files/id/convert<br/>Конвертация файла]
     end
     
     %% Monitoring API
