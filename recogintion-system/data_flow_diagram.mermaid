@@ -1,0 +1,72 @@
+flowchart LR
+    %% Входные данные
+    subgraph Input ["📁 Входные данные"]
+        VoicesDir[voices/<br/>└── speaker_name/<br/>    ├── voice1.wav<br/>    └── voice2.wav]
+        AudioDir[audio_source/<br/>├── meeting1.wav<br/>├── interview.mp3<br/>└── call.flac]
+    end
+
+    %% Обработка голосов
+    subgraph VoiceProcessing ["🎤 Обработка голосов"]
+        Combine[Объединение<br/>аудиофайлов]
+        Extract[Извлечение<br/>эмбеддингов<br/>TitaNet]
+        Store[(База данных<br/>говорящих<br/>speaker_database.pkl)]
+    end
+
+    %% Обработка аудио
+    subgraph AudioProcessing ["🎵 Обработка аудио"]
+        Convert[Конвертация<br/>в WAV]
+        Diarize[Диаризация<br/>pyannote 3.1]
+        Identify[Идентификация<br/>по БД]
+        Transcribe[Транскрипция<br/>gigaam ASR]
+        EmotionAnalysis[Анализ эмоций<br/>gigaam Emotion]
+    end
+
+    %% Сопоставление
+    subgraph Matching ["🔗 Сопоставление"]
+        TimeAlign[Временное<br/>выравнивание]
+        SpeakerMatch[Привязка<br/>к говорящим]
+        EmotionMatch[Привязка<br/>эмоций]
+    end
+
+    %% Выходные данные
+    subgraph Output ["📄 Результаты"]
+        Transcription[transcriptions/<br/>└── file_transcription.txt<br/>    ├── Временные метки<br/>    ├── Говорящие<br/>    ├── Текст<br/>    └── Эмоции]
+        Unknown[voices_need_recognize/<br/>└── unknown_speaker_xxx/<br/>    ├── combined.wav<br/>    └── segments_info.txt]
+        Processed[processed/<br/>├── voices/<br/>└── audio_source/]
+        Reports[Отчеты<br/>└── speakers_report.txt]
+    end
+
+    %% Связи
+    VoicesDir --> Combine
+    Combine --> Extract
+    Extract --> Store
+
+    AudioDir --> Convert
+    Convert --> Diarize
+    Diarize --> Identify
+    Store --> Identify
+    Convert --> Transcribe
+    Convert --> EmotionAnalysis
+
+    Identify --> TimeAlign
+    Transcribe --> SpeakerMatch
+    EmotionAnalysis --> EmotionMatch
+    TimeAlign --> SpeakerMatch
+    SpeakerMatch --> EmotionMatch
+
+    EmotionMatch --> Transcription
+    Identify --> Unknown
+    VoicesDir --> Processed
+    AudioDir --> Processed
+    Transcription --> Reports
+
+    %% Стили
+    classDef inputStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef processStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef outputStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef dataStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+
+    class VoicesDir,AudioDir inputStyle
+    class Combine,Extract,Convert,Diarize,Identify,Transcribe,EmotionAnalysis,TimeAlign,SpeakerMatch,EmotionMatch processStyle
+    class Transcription,Unknown,Processed,Reports outputStyle
+    class Store dataStyle

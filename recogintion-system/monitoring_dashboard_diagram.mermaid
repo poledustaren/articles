@@ -1,0 +1,108 @@
+graph TB
+    %% Главная панель мониторинга
+    subgraph MainDashboard ["📊 Главная панель мониторинга"]
+        SystemOverview[Обзор системы<br/>System Overview]
+        ProcessingStatus[Статус обработки<br/>Processing Status]
+        PerformanceMetrics[Метрики производительности<br/>Performance Metrics]
+        AlertsPanel[Панель уведомлений<br/>Alerts Panel]
+    end
+    
+    %% Системные метрики
+    subgraph SystemMetrics ["🖥️ Системные метрики"]
+        MemoryUsage[Использование памяти<br/>- RAM usage<br/>- GPU memory<br/>- Swap usage]
+        DiskUsage[Использование диска<br/>- Свободное место<br/>- I/O операции<br/>- Скорость чтения/записи]
+        NetworkUsage[Сетевая активность<br/>- Загрузка моделей<br/>- API вызовы<br/>- Пропускная способность]
+    end
+    
+    %% Метрики обработки
+    subgraph ProcessingMetrics ["⚙️ Метрики обработки"]
+        FileProcessing[Обработка файлов<br/>- Файлов в очереди<br/>- Обработано<br/>- Ошибки]
+        SpeakerMetrics[Метрики говорящих<br/>- Зарегистрированных<br/>- Идентифицированных<br/>- Неизвестных]
+        TranscriptionMetrics[Метрики транскрипции<br/>- Время обработки<br/>- Качество распознавания<br/>- Языки]
+        EmotionMetrics[Метрики эмоций<br/>- Распределение эмоций<br/>- Уверенность<br/>- Статистика по говорящим]
+    end
+    
+    %% Метрики моделей
+    subgraph ModelMetrics ["🤖 Метрики моделей"]
+        ASRMetrics[ASR Model Metrics<br/>- Время инференса<br/>- Точность<br/>- Использование GPU]
+        EmotionModelMetrics[Emotion Model Metrics<br/>- Время обработки<br/>- Распределение эмоций<br/>- Память]
+        VerificationMetrics[Verification Metrics<br/>- Время верификации<br/>- Точность идентификации<br/>- Пороги схожести]
+        DiarizationMetrics[Diarization Metrics<br/>- Время диаризации<br/>- Количество говорящих<br/>- Качество сегментации]
+    end
+    
+    %% Качество и точность
+    subgraph QualityMetrics ["🎯 Метрики качества"]
+        AccuracyMetrics[Точность<br/>- WER Word Error Rate<br/>- Speaker identification accuracy<br/>- Emotion recognition accuracy]
+        QualityScores[Оценки качества<br/>- Audio quality scores<br/>- Transcription confidence<br/>- Overall system quality]
+        ErrorAnalysis[Анализ ошибок<br/>- Типы ошибок<br/>- Частота ошибок<br/>- Корреляции]
+        BenchmarkResults[Результаты бенчмарков<br/>- Сравнение с baseline<br/>- Performance trends<br/>- Regression detection]
+    end
+    
+    %% Алерты и уведомления
+    subgraph AlertsSystem ["🚨 Система уведомлений"]
+        SystemAlerts[Системные алерты<br/>- Высокая загрузка CPU/GPU<br/>- Нехватка памяти<br/>- Ошибки диска]
+        ProcessingAlerts[Алерты обработки<br/>- Сбои в обработке<br/>- Долгие операции<br/>- Очередь переполнена]
+        QualityAlerts[Алерты качества<br/>- Низкая точность<br/>- Высокий WER<br/>- Аномальные результаты]
+        SecurityAlerts[Алерты безопасности<br/>- Подозрительная активность<br/>- Нарушения доступа<br/>- Целостность данных]
+    end
+    
+    %% Исторические данные
+    subgraph HistoricalData ["📈 Исторические данные"]
+        TrendAnalysis[Анализ трендов<br/>- Performance over time<br/>- Usage patterns<br/>- Seasonal variations]
+        CapacityPlanning[Планирование мощности<br/>- Resource forecasting<br/>- Growth predictions<br/>- Bottleneck analysis]
+        ReportGeneration[Генерация отчетов<br/>- Daily/Weekly/Monthly<br/>- Custom reports<br/>- Export capabilities]
+        DataRetention[Хранение данных<br/>- Retention policies<br/>- Data archiving<br/>- Cleanup procedures]
+    end
+    
+    %% Пользовательский интерфейс
+    subgraph UserInterface ["🖼️ Пользовательский интерфейс"]
+        WebDashboard[Web Dashboard<br/>- Real-time updates<br/>- Interactive charts<br/>- Responsive design]
+        CLIInterface[CLI Interface<br/>- Command-line monitoring<br/>- Scripting support<br/>- Automation friendly]
+        APIEndpoints[API Endpoints<br/>- REST API<br/>- Metrics export<br/>- Integration support]
+        Notifications[Уведомления<br/>- Email alerts<br/>- Slack integration<br/>- Custom webhooks]
+    end
+    
+    %% Связи между компонентами
+    MainDashboard --> SystemOverview
+    MainDashboard --> ProcessingStatus
+    MainDashboard --> PerformanceMetrics
+    MainDashboard --> AlertsPanel
+    
+    SystemOverview --> SystemMetrics
+    ProcessingStatus --> ProcessingMetrics
+    PerformanceMetrics --> ModelMetrics
+    AlertsPanel --> AlertsSystem
+    
+    SystemMetrics --> QualityMetrics
+    ProcessingMetrics --> QualityMetrics
+    ModelMetrics --> QualityMetrics
+    
+    QualityMetrics --> HistoricalData
+    AlertsSystem --> HistoricalData
+    
+    HistoricalData --> UserInterface
+    MainDashboard --> UserInterface
+    
+    %% Обратные связи
+    AlertsSystem -.-> SystemMetrics
+    QualityMetrics -.-> ProcessingMetrics
+    HistoricalData -.-> ModelMetrics
+    
+    %% Стили
+    classDef dashboardStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
+    classDef systemStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef processingStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef modelStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef qualityStyle fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef alertStyle fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+    classDef historyStyle fill:#f1f8e9,stroke:#689f38,stroke-width:2px
+    classDef uiStyle fill:#efebe9,stroke:#5d4037,stroke-width:2px
+    
+    class MainDashboard,SystemOverview,ProcessingStatus,PerformanceMetrics,AlertsPanel dashboardStyle
+    class SystemMetrics,CPUUsage,MemoryUsage,DiskUsage,NetworkUsage systemStyle
+    class ProcessingMetrics,FileProcessing,SpeakerMetrics,TranscriptionMetrics,EmotionMetrics processingStyle
+    class ModelMetrics,ASRMetrics,EmotionModelMetrics,VerificationMetrics,DiarizationMetrics modelStyle
+    class QualityMetrics,AccuracyMetrics,QualityScores,ErrorAnalysis,BenchmarkResults qualityStyle
+    class AlertsSystem,SystemAlerts,ProcessingAlerts,QualityAlerts,SecurityAlerts alertStyle
+    class HistoricalData,TrendAnalysis,CapacityPlanning,ReportGeneration,DataRetention historyStyle
+    class UserInterface,WebDashboard,CLIInterface,APIEndpoints,Notifications uiStyle

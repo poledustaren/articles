@@ -1,0 +1,97 @@
+sequenceDiagram
+    participant User
+    participant Main as main.py
+    participant GR as GigaRecognit
+    participant MM as ModelManager
+    participant SE as SpeakerEnrollment
+    participant AFP as AudioFileProcessor
+    participant TM as TranscriptionManager
+    participant SD as SpeakerDiarization
+    participant SI as SpeakerIdentification
+    participant T as Transcriber
+    participant EA as EmotionAnalyzer
+    participant DB as SpeakerDatabase
+
+    User->>Main: python main.py
+    Main->>GR: create instance
+    Main->>GR: initialize()
+
+    GR->>MM: load_all_models()
+    MM-->>GR: models loaded
+
+    GR->>GR: run_full_pipeline()
+
+    %% Шаг 1: Регистрация говорящих
+    Note over GR,SE: Шаг 1: Регистрация говорящих
+    GR->>SE: auto_enroll_from_directory()
+    SE->>SE: find speaker directories
+    loop For each speaker
+        SE->>SE: combine audio files
+        SE->>MM: get_verification_model()
+        MM-->>SE: verification model
+        SE->>SE: extract embedding
+        SE->>DB: add_speaker(name, embedding)
+        DB-->>SE: speaker added
+    end
+    SE->>SE: move_processed_speakers()
+    SE-->>GR: enrollment complete
+
+    %% Шаг 2: Обработка аудиофайлов
+    Note over GR,TM: Шаг 2: Обработка аудиофайлов
+    GR->>AFP: process_all_files()
+    AFP->>AFP: find_audio_files()
+
+    loop For each audio file
+        AFP->>TM: process_audio_with_speakers(audio_path)
+
+        %% Диаризация
+        TM->>SD: diarize(audio_path)
+        SD->>MM: get_diarization_pipeline()
+        MM-->>SD: pipeline
+        SD->>SD: run diarization
+        SD-->>TM: speaker_segments
+
+        %% Идентификация
+        TM->>SI: identify_speakers(audio_path, segments)
+        SI->>DB: get_all_speakers()
+        DB-->>SI: speaker_database
+        loop For each segment
+            SI->>MM: get_verification_model()
+            MM-->>SI: verification model
+            SI->>SI: extract embedding
+            SI->>SI: compare with database
+        end
+        SI-->>TM: identified_speakers, unknown_speakers
+
+        %% Транскрипция
+        TM->>T: transcribe_longform(audio_path)
+        T->>MM: get_asr_model()
+        MM-->>T: asr_model
+        T->>T: run transcription
+        T-->>TM: recognition_result
+
+        %% Анализ эмоций
+        loop For each segment
+            TM->>EA: get_emotion_for_segment(audio_path, start, end)
+            EA->>MM: get_emotion_model()
+            MM-->>EA: emotion_model
+            EA->>EA: analyze emotions
+            EA-->>TM: emotions
+        end
+
+        %% Сопоставление и сохранение
+        TM->>TM: match_transcription_with_speakers()
+        TM->>TM: save_transcription_with_speakers()
+        TM-->>AFP: transcription_results
+
+        AFP->>AFP: move_file_to_processed()
+    end
+
+    AFP-->>GR: processing complete
+
+    %% Финализация
+    GR->>GR: show_statistics()
+    GR->>GR: create_report()
+    GR->>GR: cleanup()
+    GR-->>Main: pipeline complete
+    Main-->>User: Done

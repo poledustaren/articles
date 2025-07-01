@@ -1,0 +1,68 @@
+stateDiagram-v2
+    [*] --> Initialization
+
+    state Initialization {
+        [*] --> LoadingModels
+        LoadingModels --> CreatingDirectories
+        CreatingDirectories --> StartingMonitoring
+        StartingMonitoring --> [*]
+    }
+
+    Initialization --> SpeakerEnrollment
+
+    state SpeakerEnrollment {
+        [*] --> ScanningVoicesDirectory
+        ScanningVoicesDirectory --> ProcessingSpeakers
+
+        state ProcessingSpeakers {
+            [*] --> CombiningAudioFiles
+            CombiningAudioFiles --> ExtractingEmbeddings
+            ExtractingEmbeddings --> SavingToDatabase
+            SavingToDatabase --> MovingToProcessed
+            MovingToProcessed --> [*]
+        }
+
+        ProcessingSpeakers --> [*]
+    }
+
+    SpeakerEnrollment --> AudioProcessing
+
+    state AudioProcessing {
+        [*] --> ScanningAudioFiles
+        ScanningAudioFiles --> ProcessingFiles
+
+        state ProcessingFiles {
+            [*] --> FileProcessing
+
+            state FileProcessing {
+                [*] --> Diarization
+                Diarization --> SpeakerIdentification
+                SpeakerIdentification --> Transcription
+                Transcription --> EmotionAnalysis
+                EmotionAnalysis --> Matching
+                Matching --> SavingResults
+                SavingResults --> [*]
+            }
+
+            FileProcessing --> [*]
+        }
+
+        ProcessingFiles --> [*]
+    }
+
+    AudioProcessing --> Finalization
+
+    state Finalization {
+        [*] --> GeneratingStatistics
+        GeneratingStatistics --> CreatingReports
+        CreatingReports --> CleaningUp
+        CleaningUp --> [*]
+    }
+
+    Finalization --> [*]
+
+    %% Состояния ошибок
+    Initialization --> Error : Model loading failed
+    SpeakerEnrollment --> Error : Enrollment failed
+    AudioProcessing --> Error : Processing failed
+    Error --> [*] : Cleanup and exit

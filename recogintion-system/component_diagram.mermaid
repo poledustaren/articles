@@ -1,0 +1,132 @@
+graph TB
+    %% Внешние зависимости
+    subgraph External ["🌐 Внешние зависимости"]
+        PyTorch[PyTorch<br/>Deep Learning Framework]
+        PyannoteAudio[pyannote.audio<br/>Speaker Diarization]
+        NeMo[NVIDIA NeMo<br/>ASR Toolkit]
+        Gigaam[gigaam<br/>ASR & Emotion Models]
+        Pydub[pydub<br/>Audio Processing]
+    end
+    
+    %% Основные компоненты
+    subgraph Core ["🎯 Основные компоненты"]
+        MainEntry[main.py<br/>Entry Point]
+        GigaRecognit[GigaRecognit<br/>Main System Class]
+        AudioFileProcessor[AudioFileProcessor<br/>File Processing Logic]
+    end
+    
+    %% Модели и данные
+    subgraph Models ["🤖 Модели и данные"]
+        ModelManager[ModelManager<br/>ML Models Management]
+        SpeakerDB[SpeakerDatabase<br/>Speaker Embeddings Storage]
+    end
+    
+    %% Аудио обработка
+    subgraph AudioComponents ["🎵 Аудио компоненты"]
+        AudioProcessor[AudioProcessor<br/>Audio File Operations]
+        SpeakerDiarization[SpeakerDiarization<br/>Speaker Segmentation]
+        SpeakerIdentification[SpeakerIdentification<br/>Speaker Recognition]
+        SpeakerEnrollment[SpeakerEnrollment<br/>Speaker Registration]
+    end
+    
+    %% Транскрипция
+    subgraph TranscriptionComponents ["📝 Транскрипция"]
+        TranscriptionManager[TranscriptionManager<br/>Orchestrates Transcription]
+        Transcriber[Transcriber<br/>Speech-to-Text]
+        EmotionAnalyzer[EmotionAnalyzer<br/>Emotion Detection]
+    end
+    
+    %% Утилиты
+    subgraph Utils ["🛠️ Утилиты"]
+        FileManager[FileManager<br/>File Operations]
+        StatisticsManager[StatisticsManager<br/>System Statistics]
+        ReportManager[ReportManager<br/>Report Generation]
+        ProgressUtils[ProgressUtils<br/>Progress Bars]
+    end
+    
+    %% Конфигурация
+    subgraph Config ["⚙️ Конфигурация"]
+        Settings[Settings<br/>System Configuration]
+    end
+    
+    %% Файловая система
+    subgraph FileSystem ["📁 Файловая система"]
+        VoicesDir[voices/<br/>Speaker Audio Files]
+        AudioSourceDir[audio_source/<br/>Input Audio Files]
+        TranscriptionsDir[transcriptions/<br/>Output Transcriptions]
+        ProcessedDir[processed/<br/>Processed Files Archive]
+        UnknownDir[voices_need_recognize/<br/>Unknown Speakers]
+        DatabaseFile[(speaker_database.pkl<br/>Speaker Embeddings)]
+    end
+    
+    %% Связи между компонентами
+    MainEntry --> GigaRecognit
+    GigaRecognit --> AudioFileProcessor
+    GigaRecognit --> SpeakerEnrollment
+    GigaRecognit --> StatisticsManager
+    GigaRecognit --> ReportManager
+    
+    AudioFileProcessor --> AudioProcessor
+    AudioFileProcessor --> TranscriptionManager
+    
+    TranscriptionManager --> Transcriber
+    TranscriptionManager --> EmotionAnalyzer
+    TranscriptionManager --> SpeakerDiarization
+    TranscriptionManager --> SpeakerIdentification
+    
+    SpeakerEnrollment --> ModelManager
+    SpeakerEnrollment --> SpeakerDB
+    SpeakerEnrollment --> AudioProcessor
+    
+    SpeakerIdentification --> ModelManager
+    SpeakerIdentification --> SpeakerDB
+    
+    Transcriber --> ModelManager
+    EmotionAnalyzer --> ModelManager
+    SpeakerDiarization --> ModelManager
+    
+    %% Связи с внешними зависимостями
+    ModelManager --> PyTorch
+    ModelManager --> PyannoteAudio
+    ModelManager --> NeMo
+    ModelManager --> Gigaam
+    
+    AudioProcessor --> Pydub
+    
+    %% Связи с файловой системой
+    SpeakerEnrollment --> VoicesDir
+    SpeakerEnrollment --> ProcessedDir
+    SpeakerDB --> DatabaseFile
+    AudioFileProcessor --> AudioSourceDir
+    TranscriptionManager --> TranscriptionsDir
+    SpeakerIdentification --> UnknownDir
+    
+    %% Утилиты используются везде
+    AudioFileProcessor --> FileManager
+    TranscriptionManager --> ProgressUtils
+    SpeakerEnrollment --> ProgressUtils
+    StatisticsManager --> FileManager
+    
+    %% Конфигурация используется везде
+    GigaRecognit --> Settings
+    ModelManager --> Settings
+    SpeakerDB --> Settings
+    
+    %% Стили
+    classDef coreStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
+    classDef modelStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef audioStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef transcriptionStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef utilStyle fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef configStyle fill:#f1f8e9,stroke:#689f38,stroke-width:2px
+    classDef fileStyle fill:#efebe9,stroke:#5d4037,stroke-width:2px
+    classDef externalStyle fill:#f5f5f5,stroke:#616161,stroke-width:2px
+    
+    class MainEntry,GigaRecognit,AudioFileProcessor coreStyle
+    class ModelManager,SpeakerDB modelStyle
+    class AudioProcessor,SpeakerDiarization,SpeakerIdentification,SpeakerEnrollment audioStyle
+    class TranscriptionManager,Transcriber,EmotionAnalyzer transcriptionStyle
+    class FileManager,StatisticsManager,ReportManager,ProgressUtils utilStyle
+    class Settings configStyle
+    class VoicesDir,AudioSourceDir,TranscriptionsDir,ProcessedDir,UnknownDir,DatabaseFile fileStyle
+    class PyTorch,PyannoteAudio,NeMo,Gigaam,Pydub externalStyle

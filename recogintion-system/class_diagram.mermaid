@@ -1,0 +1,145 @@
+classDiagram
+    %% Основные классы
+    class GigaRecognit {
+        -processor: AudioFileProcessor
+        -speaker_enrollment: SpeakerEnrollment
+        -statistics: StatisticsManager
+        -report_manager: ReportManager
+        +initialize()
+        +run_full_pipeline()
+        +process_directory(input_dir, output_dir)
+        +process_single_file(audio_file)
+        +enroll_speaker(audio_files, speaker_name)
+        +get_statistics()
+        +create_report()
+    }
+
+    %% Управление моделями
+    class ModelManager {
+        -verification_model
+        -asr_model
+        -emotion_model
+        -diarization_pipeline
+        +load_all_models()
+        +get_verification_model()
+        +get_asr_model()
+        +get_emotion_model()
+        +get_diarization_pipeline()
+    }
+
+    %% База данных говорящих
+    class SpeakerDatabase {
+        -database_file: str
+        -speakers: dict
+        +add_speaker(name, embedding)
+        +get_speaker(name)
+        +get_all_speakers()
+        +remove_speaker(name)
+        +save()
+        +load()
+        +count()
+        +is_empty()
+    }
+
+    %% Обработка аудио
+    class AudioProcessor {
+        +find_audio_files(directory, exclude_patterns)
+        +combine_audio_files(audio_files)
+        +convert_to_wav(audio_file)
+        +extract_segment(audio_path, start, end)
+    }
+
+    class SpeakerDiarization {
+        -pipeline
+        +diarize(audio_path)
+        +find_speaker_for_timeframe(diarization, start, end)
+        +group_segments_by_speaker(diarization)
+    }
+
+    class SpeakerIdentification {
+        -verification_model
+        +identify_speakers(audio_path, speaker_segments, output_dir)
+        +save_unknown_speakers(audio_path, unknown_speakers_data)
+        -compare_with_database(audio_path)
+        -generate_speaker_id(segments, filename)
+    }
+
+    class SpeakerEnrollment {
+        -verification_model
+        +enroll_speaker_from_files(audio_files, speaker_name)
+        +auto_enroll_from_directory(voices_dir)
+        +move_processed_speakers()
+    }
+
+    %% Транскрипция
+    class Transcriber {
+        -asr_model
+        +transcribe_longform(audio_path)
+        +format_transcription_segment(start, end, speaker, text, emotions)
+    }
+
+    class EmotionAnalyzer {
+        -emotion_model
+        +get_emotion_for_segment(audio_path, start, end)
+        +analyze_emotions_stats(emotions_data)
+        +has_significant_emotions(emotions)
+    }
+
+    class TranscriptionManager {
+        -transcriber: Transcriber
+        -emotion_analyzer: EmotionAnalyzer
+        -diarization: SpeakerDiarization
+        -speaker_identification: SpeakerIdentification
+        +process_audio_with_speakers(audio_path, output_dir)
+        +save_transcription_with_speakers(audio_path, results, emotions_stats)
+        -match_transcription_with_speakers(audio_path, recognition_result, identified_speakers)
+    }
+
+    %% Процессор файлов
+    class AudioFileProcessor {
+        -audio_processor: AudioProcessor
+        -speaker_enrollment: SpeakerEnrollment
+        -transcription_manager: TranscriptionManager
+        +process_single_file(audio_file)
+        +process_all_files(audio_dir)
+        +batch_process_directory(input_dir, output_dir)
+    }
+
+    %% Утилиты
+    class StatisticsManager {
+        +show_statistics()
+        -show_unknown_speakers_stats()
+        -show_processed_speakers_stats()
+        -show_transcriptions_stats()
+    }
+
+    class ReportManager {
+        +get_transcription_summary(transcription_file)
+        +create_speakers_report()
+    }
+
+    %% Связи
+    GigaRecognit --> AudioFileProcessor
+    GigaRecognit --> SpeakerEnrollment
+    GigaRecognit --> StatisticsManager
+    GigaRecognit --> ReportManager
+
+    AudioFileProcessor --> AudioProcessor
+    AudioFileProcessor --> SpeakerEnrollment
+    AudioFileProcessor --> TranscriptionManager
+
+    TranscriptionManager --> Transcriber
+    TranscriptionManager --> EmotionAnalyzer
+    TranscriptionManager --> SpeakerDiarization
+    TranscriptionManager --> SpeakerIdentification
+
+    SpeakerEnrollment --> ModelManager
+    SpeakerEnrollment --> SpeakerDatabase
+    SpeakerEnrollment --> AudioProcessor
+
+    SpeakerIdentification --> ModelManager
+    SpeakerIdentification --> SpeakerDatabase
+
+    Transcriber --> ModelManager
+    EmotionAnalyzer --> ModelManager
+    SpeakerDiarization --> ModelManager

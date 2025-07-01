@@ -1,0 +1,86 @@
+graph TB
+    %% Входная точка
+    Start([main.py]) --> GR[GigaRecognit]
+
+    %% Инициализация
+    GR --> Init{Инициализация}
+    Init --> MM[ModelManager]
+    Init --> CD[create_directories]
+    Init --> SM[SystemMonitor]
+
+    %% Загрузка моделей
+    MM --> ASR[ASR Model<br/>gigaam v2_rnnt]
+    MM --> VER[Verification Model<br/>TitaNet]
+    MM --> EMO[Emotion Model<br/>gigaam emo]
+    MM --> DIAR[Diarization Pipeline<br/>pyannote 3.1]
+
+    %% Основной пайплайн
+    GR --> Pipeline{Полный пайплайн}
+
+    %% Шаг 1: Регистрация говорящих
+    Pipeline --> SE[SpeakerEnrollment]
+    SE --> FindVoices[Поиск папок в voices/]
+    FindVoices --> CombineAudio[Объединение аудиофайлов]
+    CombineAudio --> ExtractEmb[Извлечение эмбеддингов]
+    ExtractEmb --> SaveDB[(SpeakerDB<br/>speaker_database.pkl)]
+    SaveDB --> MoveProcessed[Перемещение в processed/]
+
+    %% Шаг 2: Обработка аудиофайлов
+    MoveProcessed --> AFP[AudioFileProcessor]
+    AFP --> FindAudio[Поиск аудиофайлов]
+    FindAudio --> ProcessFile[Обработка файла]
+
+    %% Обработка одного файла
+    ProcessFile --> TM[TranscriptionManager]
+    TM --> Step1[1. Диаризация]
+    TM --> Step2[2. Идентификация]
+    TM --> Step3[3. Транскрипция]
+    TM --> Step4[4. Анализ эмоций]
+    TM --> Step5[5. Сопоставление]
+
+    %% Детализация шагов
+    Step1 --> DIAR_PROC[pyannote.audio<br/>Разделение на сегменты]
+    DIAR_PROC --> Segments[Сегменты по спикерам]
+
+    Step2 --> SI[SpeakerIdentification]
+    Segments --> SI
+    SI --> CompareDB[Сравнение с БД]
+    SaveDB --> CompareDB
+    CompareDB --> Identified[Идентифицированные]
+    CompareDB --> Unknown[Неизвестные спикеры]
+    Unknown --> SaveUnknown[Сохранение в<br/>voices_need_recognize/]
+
+    Step3 --> Transcriber[Transcriber]
+    Transcriber --> ASR_PROC[gigaam ASR<br/>Распознавание речи]
+    ASR_PROC --> TextSegments[Текстовые сегменты]
+
+    Step4 --> EA[EmotionAnalyzer]
+    EA --> EMO_PROC[gigaam Emotion<br/>Анализ эмоций]
+    EMO_PROC --> Emotions[Эмоциональные метки]
+
+    Step5 --> Match[Сопоставление<br/>время + спикер + текст + эмоции]
+    Identified --> Match
+    TextSegments --> Match
+    Emotions --> Match
+
+    %% Результаты
+    Match --> Results[Результаты транскрипции]
+    Results --> SaveTrans[Сохранение в<br/>transcriptions/]
+    SaveTrans --> MoveAudio[Перемещение аудио в<br/>processed/]
+
+    %% Финализация
+    MoveAudio --> Stats[Статистика]
+    Stats --> Report[Создание отчета]
+    Report --> Cleanup[Очистка временных файлов]
+    Cleanup --> End([Завершение])
+
+    %% Стили
+    classDef modelClass fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef processClass fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef dataClass fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef fileClass fill:#fff3e0,stroke:#e65100,stroke-width:2px
+
+    class ASR,VER,EMO,DIAR modelClass
+    class SE,AFP,TM,SI,EA,Transcriber processClass
+    class SaveDB,SaveUnknown,SaveTrans dataClass
+    class FindVoices,FindAudio,MoveProcessed,MoveAudio fileClass

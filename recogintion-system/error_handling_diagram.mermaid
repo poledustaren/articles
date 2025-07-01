@@ -1,0 +1,86 @@
+flowchart TD
+    Start([Запуск системы]) --> InitCheck{Инициализация<br/>успешна?}
+    
+    InitCheck -->|Нет| InitError[Ошибка инициализации]
+    InitError --> LogError[Логирование ошибки]
+    LogError --> CleanupInit[Очистка ресурсов]
+    CleanupInit --> Exit1([Выход с кодом 1])
+    
+    InitCheck -->|Да| ModelLoad{Загрузка<br/>моделей?}
+    
+    ModelLoad -->|Ошибка| ModelError[Ошибка загрузки моделей]
+    ModelError --> CheckCUDA{CUDA<br/>доступна?}
+    CheckCUDA -->|Нет| FallbackCPU[Переключение на CPU]
+    CheckCUDA -->|Да| GPUError[Ошибка GPU]
+    GPUError --> FallbackCPU
+    FallbackCPU --> RetryLoad[Повторная загрузка]
+    RetryLoad --> ModelLoad
+    
+    ModelLoad -->|Успех| ProcessFiles{Обработка<br/>файлов}
+    
+    ProcessFiles --> FileLoop[Цикл по файлам]
+    FileLoop --> ProcessSingle{Обработка<br/>одного файла}
+    
+    ProcessSingle -->|Ошибка| FileError[Ошибка файла]
+    FileError --> CheckFileType{Поддерживаемый<br/>формат?}
+    CheckFileType -->|Нет| SkipFile[Пропустить файл]
+    CheckFileType -->|Да| ConvertFile[Конвертация файла]
+    ConvertFile --> RetryProcess[Повторная обработка]
+    RetryProcess --> ProcessSingle
+    
+    ProcessSingle -->|Успех| NextFile{Есть еще<br/>файлы?}
+    NextFile -->|Да| FileLoop
+    NextFile -->|Нет| GenerateReport[Создание отчета]
+    
+    SkipFile --> LogSkip[Логирование пропуска]
+    LogSkip --> NextFile
+    
+    %% Специфические ошибки
+    ProcessSingle --> DiarizationError{Ошибка<br/>диаризации?}
+    DiarizationError -->|Да| FallbackDiarization[Упрощенная диаризация]
+    FallbackDiarization --> ContinueProcess[Продолжить обработку]
+    
+    ProcessSingle --> TranscriptionError{Ошибка<br/>транскрипции?}
+    TranscriptionError -->|Да| FallbackTranscription[Базовая транскрипция]
+    FallbackTranscription --> ContinueProcess
+    
+    ProcessSingle --> EmotionError{Ошибка анализа<br/>эмоций?}
+    EmotionError -->|Да| SkipEmotion[Пропустить эмоции]
+    SkipEmotion --> ContinueProcess
+    
+    ContinueProcess --> NextFile
+    
+    %% Критические ошибки
+    ProcessFiles -->|Критическая ошибка| CriticalError[Критическая ошибка]
+    CriticalError --> SaveProgress[Сохранение прогресса]
+    SaveProgress --> CleanupCritical[Очистка ресурсов]
+    CleanupCritical --> Exit2([Выход с кодом 2])
+    
+    %% Прерывание пользователем
+    ProcessFiles -->|Ctrl+C| UserInterrupt[Прерывание пользователем]
+    UserInterrupt --> SaveState[Сохранение состояния]
+    SaveState --> CleanupUser[Очистка ресурсов]
+    CleanupUser --> Exit3([Выход с кодом 130])
+    
+    %% Успешное завершение
+    GenerateReport --> ReportError{Ошибка<br/>отчета?}
+    ReportError -->|Да| LogReportError[Логирование ошибки отчета]
+    LogReportError --> PartialSuccess[Частичный успех]
+    ReportError -->|Нет| FullSuccess[Полный успех]
+    
+    PartialSuccess --> CleanupPartial[Очистка ресурсов]
+    CleanupPartial --> Exit4([Выход с кодом 0])
+    
+    FullSuccess --> CleanupSuccess[Очистка ресурсов]
+    CleanupSuccess --> Exit5([Выход с кодом 0])
+    
+    %% Стили
+    classDef errorStyle fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+    classDef warningStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef successStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef processStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    
+    class InitError,ModelError,GPUError,FileError,CriticalError,ReportError errorStyle
+    class FallbackCPU,FallbackDiarization,FallbackTranscription,SkipFile,SkipEmotion,LogSkip,PartialSuccess warningStyle
+    class FullSuccess,ContinueProcess successStyle
+    class Start,ProcessFiles,FileLoop,ProcessSingle,GenerateReport processStyle
